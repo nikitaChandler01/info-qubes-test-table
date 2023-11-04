@@ -1,20 +1,15 @@
 import React from 'react';
 import './styles/App.css'
 import Row from './components/Row.js';
-import _ from 'lodash';
+import prepareData from './utils/prepareData.js';
 
 function App() {
+
   const parameters = {
     script: { name: "script", id: 1, categories: [23, 45, 89] },
     restictions: { name: "restictions", id: 2, categories: [56, 78, 8] },
     courtesy: { name: "courtesy", id: 3, categories: [10, 11, 47] }
   };
-
-  const categoriesMap = Object.values(parameters).reduce((acc, param) => {
-    const newAcc = [...acc, ...param["categories"]];
-    return newAcc;
-  }, []);
-
   const categories = {
     23: "Приветствие",
     45: "Прощание",
@@ -36,17 +31,8 @@ function App() {
     line6: { 78: 4, 56: 2, 47: 56 }
   };
 
-  const allHits = Object.values(hits);
-  const summuryHits = allHits.reduce((acc, line) => {
-    Object.entries(line).forEach(([id, count]) => {
-      if (!_.has(acc, id)) {
-        acc[id] = count;
-      } else {
-        acc[id] += count;
-      }
-    })
-    return acc;
-  }, {});
+  const rows = prepareData(parameters, categories, hits);
+  console.log(rows);
 
   return (
     <div>
@@ -57,9 +43,8 @@ function App() {
           <td className="titles">Restrictions</td>
           <td className="titles">Courtesy</td>
         </tr>
-        {categoriesMap.map((id, index) => {
-          const name = categories[id]
-          return <Row key={index} id={id} nameOfCategory={name} hitCount={summuryHits[id]} />
+        {rows.map((row, index) => {
+          return <Row key={index} data={row} />
         })}
       </table>
     </div>
